@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearshore Insights - Dashboard ROI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .executive-summary {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .executive-summary h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .executive-summary .roi-highlight {
+            font-size: 3rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 10px;
+            margin: 30px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card.roi { border-left-color: #11998e; }
+        .metric-card.ttp { border-left-color: #667eea; }
+        .metric-card.velocity { border-left-color: #f093fb; }
+        .metric-card.retention { border-left-color: #4facfe; }
+        .metric-card.revenue { border-left-color: #43e97b; }
+        .metric-card.bugs { border-left-color: #fa709a; }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .metric-change.positive {
+            color: #11998e;
+        }
+
+        .metric-change.negative {
+            color: #e74c3c;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+
+        .financial-impact {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .financial-impact h3 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .financial-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .financial-amount {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .methodology {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .methodology h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .methodology-item {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .benchmark {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .benchmark-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .benchmark-table th,
+        .benchmark-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .benchmark-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .benchmark-table .highlight {
+            background: #e8f5e8;
+            font-weight: 700;
+            color: #11998e;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .cta-button {
+            background: white;
+            color: #11998e;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header con Executive Summary -->
+        <div class="header">
+            <h1>Nearshore Insights</h1>
+            <p class="subtitle">Dashboard ROI Predictor - Platzi Business</p>
+            <div class="executive-summary">
+                <h2>TechFlow Solutions - Q3 2024</h2>
+                <div class="roi-highlight">ROI: 5,420%</div>
+                <p>Inversión Total: $89,500 → Retorno Financiero: $4,847,000</p>
+            </div>
+        </div>
+
+        <!-- Navegación por pestañas -->
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('overview')">📊 Resumen Ejecutivo</div>
+            <div class="tab" onclick="showTab('metrics')">📈 Métricas Clave</div>
+            <div class="tab" onclick="showTab('financial')">💰 Impacto Financiero</div>
+            <div class="tab" onclick="showTab('methodology')">🔍 Metodología</div>
+            <div class="tab" onclick="showTab('benchmark')">📋 Benchmarking</div>
+        </div>
+
+        <!-- Contenido de las pestañas -->
+        <div id="overview" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card roi">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-value">5,420%</div>
+                    <div class="metric-label">ROI General</div>
+                    <div class="metric-change positive">
+                        ↗️ $4.8M de retorno sobre $89,500 invertidos
+                    </div>
+                </div>
+
+                <div class="metric-card ttp">
+                    <div class="metric-icon">⏱️</div>
+                    <div class="metric-value">12 días</div>
+                    <div class="metric-label">Time-to-Productivity</div>
+                    <div class="metric-change positive">
+                        ↗️ -73% (antes: 45 días)
+                    </div>
+                </div>
+
+                <div class="metric-card velocity">
+                    <div class="metric-icon">⚡</div>
+                    <div class="metric-value">+89%</div>
+                    <div class="metric-label">Velocity Sprint</div>
+                    <div class="metric-change positive">
+                        ↗️ Incremento en velocidad de entrega
+                    </div>
+                </div>
+
+                <div class="metric-card retention">
+                    <div class="metric-icon">❤️</div>
+                    <div class="metric-value">94%</div>
+                    <div class="metric-label">Retención de Talento</div>
+                    <div class="metric-change positive">
+                        ↗️ +16% (antes: 78%)
+                    </div>
+                </div>
+
+                <div class="metric-card revenue">
+                    <div class="metric-icon">💰</div>
+                    <div class="metric-value">$4.8M</div>
+                    <div class="metric-label">Revenue Anticipado</div>
+                    <div class="metric-change positive">
+                        ↗️ Ingresos directos atribuibles
+                    </div>
+                </div>
+
+                <div class="metric-card bugs">
+                    <div class="metric-icon">🐞</div>
+                    <div class="metric-value">-67%</div>
+                    <div class="metric-label">Bugs en Producción</div>
+                    <div class="metric-change positive">
+                        ↗️ Mejora en calidad del código
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Evolución del ROI - Trimestre Q3 2024</div>
+                <canvas id="roiChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div id="metrics" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-title">Comparativa: Antes vs Después de Platzi Nearshore Ready</div>
+                <canvas id="comparisonChart" width="400" height="300"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Time-to-Productivity por Developer</div>
+                <canvas id="ttpChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="methodology">
+                <h3>📋 Cómo calculamos estas métricas</h3>
+                <div class="methodology-item">
+                    <strong>ROI de Aprendizaje:</strong> 
+                    (Revenue Generado - Costos de Capacitación) / Costos de Capacitación × 100
+                </div>
+                <div class="methodology-item">
+                    <strong>Time-to-Productivity:</strong> 
+                    Días desde contratación hasta primer commit productivo en el proyecto
+                </div>
+                <div class="methodology-item">
+                    <strong>Revenue Atribuible:</strong> 
+                    Contratos cerrados directamente por capacidades adquiridas en Platzi
+                </div>
+                <div class="methodology-item">
+                    <strong>Velocity Sprint:</strong> 
+                    Story Points completados por sprint (promedio de 6 sprints)
+                </div>
+            </div>
+        </div>
+
+        <div id="financial" class="tab-content">
+            <div class="financial-impact">
+                <h3>💰 Impacto Financiero Detallado</h3>
+                <div class="financial-grid">
+                    <div class="financial-item">
+                        <div class="financial-amount">$890K</div>
+                        <div>Ingresos directos DevOps</div>
+                    </div>
+                    <div class="financial-item">
+                        <div class="financial-amount">$356K</div>
+                        <div>Ahorro en recruitment</div>
+                    </div>
+                    <div class="financial-item">
+                        <div class="financial-amount">$267K</div>
+                        <div>Reducción costos soporte</div>
+                    </div>
+                    <div class="financial-item">
+                        <div class="financial-amount">$1.2M</div>
+                        <div>Contratos enterprise acelerados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Desglose de Retorno de Inversión</div>
+                <canvas id="financialChart" width="400" height="300"></canvas>
+            </div>
+
+            <div class="methodology">
+                <h3>🎯 Métricas que importan al CFO</h3>
+                <div class="methodology-item">
+                    <strong>Punto de Equilibrio:</strong> Nuevas contrataciones productivas en 28 días (vs 90 días anteriores)
+                </div>
+                <div class="methodology-item">
+                    <strong>Certificación SOC 2:</strong> Lograda 12 semanas antes, acelerando $1.2M en contratos enterprise
+                </div>
+                <div class="methodology-item">
+                    <strong>Costo por Developer Productivo:</strong> $4,972 (vs $12,500 promedio industria)
+                </div>
+            </div>
+        </div>
+
+        <div id="methodology" class="tab-content">
+            <div class="methodology">
+                <h3>🔬 Metodología de Cálculo Transparente</h3>
+                
+                <div class="methodology-item">
+                    <strong>📊 Fuentes de Datos:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Jira: Story points y velocity tracking</li>
+                        <li>GitHub: Commits, pull requests, code quality</li>
+                        <li>HR Systems: Fechas de contratación y productividad</li>
+                        <li>Finance: Revenue tracking y cost attribution</li>
+                    </ul>
+                </div>
+
+                <div class="methodology-item">
+                    <strong>⏱️ Time-to-Productivity Detallado:</strong>
+                    <br>Medimos desde contratación hasta:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Primer commit en proyecto real</li>
+                        <li>Completion de al menos 80% de story points asignados</li>
+                        <li>Code review approval sin cambios mayores</li>
+                    </ul>
+                </div>
+
+                <div class="methodology-item">
+                    <strong>💰 Revenue Attribution Framework:</strong>
+                    <br>Solo contamos ingresos directamente atribuibles:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Contratos cerrados por nuevas capacidades técnicas</li>
+                        <li>Proyectos entregados más rápido = revenue anticipado</li>
+                        <li>Certificaciones que desbloquearon enterprise deals</li>
+                    </ul>
+                </div>
+
+                <div class="methodology-item">
+                    <strong>🎯 Verificación Externa:</strong>
+                    <br>Métricas validadas por:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Auditoría interna Finance</li>
+                        <li>Board review trimestral</li>
+                        <li>Benchmarking vs competitors (datos anonimizados)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="benchmark" class="tab-content">
+            <div class="benchmark">
+                <h3>📊 Benchmarking vs Industria</h3>
+                <table class="benchmark-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>TechFlow (con Platzi)</th>
+                            <th>Promedio Industria</th>
+                            <th>Top 10% Industria</th>
+                            <th>Diferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Time-to-Productivity</td>
+                            <td class="highlight">12 días</td>
+                            <td>52 días</td>
+                            <td>28 días</td>
+                            <td class="highlight">-57% vs Top 10%</td>
+                        </tr>
+                        <tr>
+                            <td>ROI L&D</td>
+                            <td class="highlight">5,420%</td>
+                            <td>240%</td>
+                            <td>890%</td>
+                            <td class="highlight">+509% vs Top 10%</td>
+                        </tr>
+                        <tr>
+                            <td>Developer Retention</td>
+                            <td class="highlight">94%</td>
+                            <td>78%</td>
+                            <td>87%</td>
+                            <td class="highlight">+7% vs Top 10%</td>
+                        </tr>
+                        <tr>
+                            <td>Sprint Velocity</td>
+                            <td class="highlight">89 pts</td>
+                            <td>47 pts</td>
+                            <td>65 pts</td>
+                            <td class="highlight">+37% vs Top 10%</td>
+                        </tr>
+                        <tr>
+                            <td>Bugs en Producción</td>
+                            <td class="highlight">0.8 por sprint</td>
+                            <td>4.2 por sprint</td>
+                            <td>2.1 por sprint</td>
+                            <td class="highlight">-62% vs Top 10%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 20px; background: #f0f8ff; border-radius: 10px;">
+                    <strong>📈 Posición en el mercado:</strong> TechFlow se ubica en el <strong>TOP 1%</strong> 
+                    de empresas tech con equipos nearshore en métricas de productividad y ROI.
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h3>🚀 ¿Listo para replicar estos resultados?</h3>
+            <p style="margin: 20px 0; font-size: 1.2rem;">
+                Únete a más de 200 empresas que ya utilizan Platzi Nearshore Ready 
+                para transformar sus equipos LATAM en generadores de ROI predecible.
+            </p>
+            <button class="cta-button" onclick="requestDemo()">📞 Solicitar Demo</button>
+            <button class="cta-button" onclick="downloadReport()">📊 Descargar Reporte</button>
+            <button class="cta-button" onclick="calculateROI()">🧮 Calcular mi ROI</button>
+        </div>
+    </div>
+
+    <script>
+        // Funciones de navegación
+        function showTab(tabName) {
+            // Ocultar todas las pestañas
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remover clase active de todos los botones
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Mostrar la pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            event.target.classList.add('active');
+            
+            // Inicializar gráficos si es necesario
+            if (tabName === 'overview') {
+                initROIChart();
+            } else if (tabName === 'metrics') {
+                initComparisonChart();
+                initTTPChart();
+            } else if (tabName === 'financial') {
+                initFinancialChart();
+            }
+        }
+
+        // Gráfico de ROI Evolution
+        function initROIChart() {
+            const ctx = document.getElementById('roiChart')?.getContext('2d');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Julio', 'Agosto', 'Septiembre'],
+                    datasets: [{
+                        label: 'ROI Acumulado (%)',
+                        data: [1200, 3800, 5420],
+                        borderColor: '#11998e',
+                        backgroundColor: 'rgba(17, 153, 142, 0.1)',
+                        borderWidth: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de comparación
+        function initComparisonChart() {
+            const ctx = document.getElementById('comparisonChart')?.getContext('2d');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['TTP (días)', 'Velocity (pts)', 'Retención (%)', 'Bugs/Sprint'],
+                    datasets: [{
+                        label: 'Antes de Platzi',
+                        data: [45, 47, 78, 4.2],
+                        backgroundColor: '#fa709a'
+                    }, {
+                        label: 'Después de Platzi',
+                        data: [12, 89, 94, 0.8],
+                        backgroundColor: '#11998e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico Time-to-Productivity
+        function initTTPChart() {
+            const ctx = document.getElementById('ttpChart')?.getContext('2d');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Productivo (12 días)', 'Tiempo anterior desperdiciado (33 días)'],
+                    datasets: [{
+                        data: [12, 33],
+                        backgroundColor: ['#11998e', '#e0e0e0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico financiero
+        function initFinancialChart() {
+            const ctx = document.getElementById('financialChart')?.getContext('2d');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['DevOps Revenue', 'Ahorro Recruitment', 'Reducción Soporte', 'Contratos Enterprise'],
+                    datasets: [{
+                        data: [890000, 356000, 267000, 1200000],
+                        backgroundColor: ['#11998e', '#667eea', '#f093fb', '#4facfe']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': $' + context.parsed.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Funciones CTA
+        function requestDemo() {
+            alert('🎯 Demo solicitado! Un especialista te contactará en las próximas 24 horas para mostrarte cómo replicar estos resultados en tu empresa.');
+        }
+
+        function downloadReport() {
+            alert('📊 Descargando reporte completo... El análisis detallado de TechFlow Solutions llegará a tu email en 5 minutos.');
+        }
+
+        function calculateROI() {
+            const developers = prompt('¿Cuántos developers nearshore tienes?');
+            if (developers) {
+                const estimatedROI = developers * 4972 * 12; // Cálculo simplificado
+                alert(`🧮 ROI Estimado: Con ${developers} developers, podrías generar aproximadamente $${estimatedROI.toLocaleString()} en value adicional anual.`);
+            }
+        }
+
+        // Inicializar gráficos por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                initROIChart();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
