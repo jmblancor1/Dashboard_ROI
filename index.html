@@ -4,6 +4,307 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nearshore Insights - Transforma L&D en Revenue Predictivo</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R2PP0KEL07"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-R2PP0KEL07', {
+            'page_title': 'Dashboard ROI Platzi Nearshore',
+            'custom_map': {
+                'custom_parameter_1': 'tab_name',
+                'custom_parameter_2': 'button_name',
+                'custom_parameter_3': 'chart_name',
+                'custom_parameter_4': 'interaction_type'
+            }
+        });
+        
+        // Sistema de tracking personalizado completo
+        const AnalyticsTracker = {
+            // Tracking de navegación por pestañas
+            trackTabView: function(tabName) {
+                gtag('event', 'tab_view', {
+                    'event_category': 'navigation',
+                    'event_label': tabName,
+                    'tab_name': tabName,
+                    'interaction_type': 'tab_click'
+                });
+                console.log('📊 Tab viewed:', tabName);
+            },
+            
+            // Tracking de clics en botones
+            trackButtonClick: function(buttonName, buttonType = 'cta') {
+                gtag('event', 'button_click', {
+                    'event_category': 'engagement',
+                    'event_label': buttonName,
+                    'button_name': buttonName,
+                    'button_type': buttonType,
+                    'interaction_type': 'button_click'
+                });
+                console.log('📊 Button clicked:', buttonName);
+            },
+            
+            // Tracking de interacciones con gráficos
+            trackChartInteraction: function(chartName, interactionType = 'view') {
+                gtag('event', 'chart_interaction', {
+                    'event_category': 'data_visualization',
+                    'event_label': chartName,
+                    'chart_name': chartName,
+                    'interaction_type': interactionType
+                });
+                console.log('📊 Chart interaction:', chartName, interactionType);
+            },
+            
+            // Tracking de tiempo en página
+            trackTimeOnPage: function() {
+                let startTime = Date.now();
+                window.addEventListener('beforeunload', function() {
+                    const timeSpent = Math.round((Date.now() - startTime) / 1000);
+                    gtag('event', 'time_on_page', {
+                        'event_category': 'engagement',
+                        'value': timeSpent,
+                        'interaction_type': 'session_duration'
+                    });
+                });
+            },
+            
+            // Tracking de scroll mejorado
+            trackScroll: function() {
+                let maxScroll = 0;
+                let scrollEvents = new Set();
+                
+                window.addEventListener('scroll', function() {
+                    const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+                    if (scrollPercent > maxScroll) {
+                        maxScroll = scrollPercent;
+                        // Track cada 10% para más detalle
+                        const scrollEvent = Math.floor(scrollPercent / 10) * 10;
+                        if (!scrollEvents.has(scrollEvent)) {
+                            scrollEvents.add(scrollEvent);
+                            gtag('event', 'scroll_depth', {
+                                'event_category': 'engagement',
+                                'value': scrollEvent,
+                                'interaction_type': 'scroll_progress'
+                            });
+                        }
+                    }
+                });
+            },
+            
+            // Tracking de formularios
+            trackFormInteraction: function(formName, action, data = {}) {
+                gtag('event', 'form_interaction', {
+                    'event_category': 'engagement',
+                    'event_label': formName,
+                    'form_name': formName,
+                    'action': action,
+                    'interaction_type': 'form_action',
+                    ...data
+                });
+                console.log('📊 Form interaction:', formName, action, data);
+            },
+            
+            // Tracking de hover en elementos
+            trackHover: function(elementName, elementType = 'content') {
+                gtag('event', 'element_hover', {
+                    'event_category': 'engagement',
+                    'event_label': elementName,
+                    'element_name': elementName,
+                    'element_type': elementType,
+                    'interaction_type': 'hover'
+                });
+                console.log('📊 Element hovered:', elementName);
+            },
+            
+            // Tracking de focus en inputs
+            trackInputFocus: function(inputName, inputType = 'form') {
+                gtag('event', 'input_focus', {
+                    'event_category': 'engagement',
+                    'event_label': inputName,
+                    'input_name': inputName,
+                    'input_type': inputType,
+                    'interaction_type': 'input_focus'
+                });
+                console.log('📊 Input focused:', inputName);
+            },
+            
+            // Tracking de cambios en inputs
+            trackInputChange: function(inputName, inputType = 'form') {
+                gtag('event', 'input_change', {
+                    'event_category': 'engagement',
+                    'event_label': inputName,
+                    'input_name': inputName,
+                    'input_type': inputType,
+                    'interaction_type': 'input_change'
+                });
+                console.log('📊 Input changed:', inputName);
+            },
+            
+            // Tracking de secciones vistas
+            trackSectionView: function(sectionName) {
+                gtag('event', 'section_view', {
+                    'event_category': 'content',
+                    'event_label': sectionName,
+                    'section_name': sectionName,
+                    'interaction_type': 'section_view'
+                });
+                console.log('📊 Section viewed:', sectionName);
+            },
+            
+            // Tracking de métricas vistas
+            trackMetricView: function(metricName) {
+                gtag('event', 'metric_view', {
+                    'event_category': 'content',
+                    'event_label': metricName,
+                    'metric_name': metricName,
+                    'interaction_type': 'metric_view'
+                });
+                console.log('📊 Metric viewed:', metricName);
+            },
+            
+            // Tracking de errores
+            trackError: function(errorType, errorMessage) {
+                gtag('event', 'error', {
+                    'event_category': 'error',
+                    'event_label': errorType,
+                    'error_type': errorType,
+                    'error_message': errorMessage,
+                    'interaction_type': 'error'
+                });
+                console.log('📊 Error tracked:', errorType, errorMessage);
+            }
+        };
+        
+        // Inicializar tracking automático completo
+        document.addEventListener('DOMContentLoaded', function() {
+            AnalyticsTracker.trackTimeOnPage();
+            AnalyticsTracker.trackScroll();
+            
+            // Tracking automático de hover en métricas
+            document.querySelectorAll('.metric-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    const metricName = this.querySelector('.metric-label')?.textContent || 'unknown_metric';
+                    AnalyticsTracker.trackHover(metricName, 'metric_card');
+                });
+            });
+            
+            // Tracking automático de hover en gráficos
+            document.querySelectorAll('.chart-container').forEach(chart => {
+                chart.addEventListener('mouseenter', function() {
+                    const chartName = this.querySelector('.chart-title')?.textContent || 'unknown_chart';
+                    AnalyticsTracker.trackHover(chartName, 'chart_container');
+                });
+            });
+            
+            // Tracking automático de focus en inputs
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('focus', function() {
+                    AnalyticsTracker.trackInputFocus(this.name || this.id || 'unknown_input', 'form_input');
+                });
+                
+                input.addEventListener('change', function() {
+                    AnalyticsTracker.trackInputChange(this.name || this.id || 'unknown_input', 'form_input');
+                });
+                
+                // Tracking específico para inputs de la calculadora ROI
+                if (this.id === 'developers' || this.id === 'currentTTP' || this.id === 'costPerDev') {
+                    input.addEventListener('input', function() {
+                        AnalyticsTracker.trackFormInteraction('roi_calculator', 'input_change', {
+                            input_id: this.id,
+                            input_value: this.value,
+                            input_type: 'roi_calculator_input'
+                        });
+                    });
+                }
+            });
+            
+            // Tracking de secciones vistas con Intersection Observer
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionName = entry.target.className || entry.target.id || 'unknown_section';
+                        AnalyticsTracker.trackSectionView(sectionName);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            // Observar todas las secciones principales
+            document.querySelectorAll('.hero, .problem-section, .metrics-grid, .chart-container, .financial-impact, .methodology, .benchmark, .cta-section, .testimonials').forEach(section => {
+                sectionObserver.observe(section);
+            });
+            
+            // Tracking de métricas vistas
+            const metricObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const metricName = entry.target.querySelector('.metric-label')?.textContent || 'unknown_metric';
+                        AnalyticsTracker.trackMetricView(metricName);
+                    }
+                });
+            }, { threshold: 0.7 });
+            
+            document.querySelectorAll('.metric-card').forEach(metric => {
+                metricObserver.observe(metric);
+            });
+            
+            // Tracking de testimonios
+            const testimonialObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const testimonialText = entry.target.querySelector('.testimonial-text')?.textContent?.substring(0, 50) || 'unknown_testimonial';
+                        AnalyticsTracker.trackSectionView('testimonial_viewed');
+                    }
+                });
+            }, { threshold: 0.7 });
+            
+            document.querySelectorAll('.testimonial').forEach(testimonial => {
+                testimonialObserver.observe(testimonial);
+            });
+            
+            // Tracking de errores globales
+            window.addEventListener('error', function(e) {
+                AnalyticsTracker.trackError('javascript_error', e.message);
+            });
+            
+            // Tracking de clics en cualquier elemento clickeable
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (target.tagName === 'BUTTON' || target.closest('button')) {
+                    const buttonText = target.textContent?.trim() || target.closest('button')?.textContent?.trim() || 'unknown_button';
+                    AnalyticsTracker.trackButtonClick(buttonText, 'general_button');
+                }
+            });
+            
+            // Tracking de tiempo de carga de página
+            window.addEventListener('load', function() {
+                const loadTime = performance.now();
+                gtag('event', 'page_load_time', {
+                    'event_category': 'performance',
+                    'value': Math.round(loadTime),
+                    'interaction_type': 'page_load'
+                });
+                console.log('📊 Page loaded in:', Math.round(loadTime), 'ms');
+            });
+            
+            // Tracking de visibilidad de página
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    gtag('event', 'page_hidden', {
+                        'event_category': 'engagement',
+                        'interaction_type': 'page_visibility'
+                    });
+                } else {
+                    gtag('event', 'page_visible', {
+                        'event_category': 'engagement',
+                        'interaction_type': 'page_visibility'
+                    });
+                }
+            });
+        });
+    </script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -1009,6 +1310,11 @@
             // Activar el botón correspondiente
             event.target.classList.add('active');
             
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackTabView(tabName);
+            }
+            
             // Inicializar gráficos específicos
             setTimeout(() => {
                 if (tabName === 'overview') {
@@ -1021,6 +1327,11 @@
         function initROIChart() {
             const ctx = document.getElementById('roiChart')?.getContext('2d');
             if (!ctx) return;
+            
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackChartInteraction('roi_chart', 'view');
+            }
             
             new Chart(ctx, {
                 type: 'line',
@@ -1083,6 +1394,16 @@
             const currentTTP = parseInt(document.getElementById('currentTTP').value) || 45;
             const costPerDev = parseInt(document.getElementById('costPerDev').value) || 4500;
             
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackButtonClick('calculate_roi', 'calculator');
+                AnalyticsTracker.trackFormInteraction('roi_calculator', 'calculation', {
+                    developers: developers,
+                    current_ttp: currentTTP,
+                    cost_per_dev: costPerDev
+                });
+            }
+            
             // Cálculos basados en métricas de TechFlow
             const newTTP = 12; // días con Platzi
             const daysImproved = currentTTP - newTTP;
@@ -1120,31 +1441,28 @@
 
         // Funciones CTA con tracking mejorado
         function requestDemo() {
-            // Analytics tracking aquí
-            gtag && gtag('event', 'demo_request', {
-                'event_category': 'engagement',
-                'event_label': 'hero_cta'
-            });
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackButtonClick('request_demo', 'primary_cta');
+            }
             
             alert('🎯 Demo solicitado! Un especialista te contactará en las próximas 4 horas para una sesión de 15 minutos personalizada.');
         }
 
         function downloadReport() {
-            // Analytics tracking
-            gtag && gtag('event', 'report_download', {
-                'event_category': 'engagement',
-                'event_label': 'case_study'
-            });
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackButtonClick('download_report', 'secondary_cta');
+            }
             
             alert('📊 Descargando caso completo... El análisis detallado de TechFlow Solutions llegará a tu email en 2 minutos.');
         }
 
         function bookAudit() {
-            // Analytics tracking
-            gtag && gtag('event', 'audit_request', {
-                'event_category': 'engagement',
-                'event_label': 'free_audit'
-            });
+            // Google Analytics tracking
+            if (typeof AnalyticsTracker !== 'undefined') {
+                AnalyticsTracker.trackButtonClick('book_audit', 'secondary_cta');
+            }
             
             alert('🔍 Auditoría ROI programada! Te enviaremos un assessment personalizado de 30 puntos para tu equipo nearshore.');
         }
